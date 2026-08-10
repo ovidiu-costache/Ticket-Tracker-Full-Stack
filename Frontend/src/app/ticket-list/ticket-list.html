@@ -1,0 +1,62 @@
+<button routerLink="/">← Inapoi la Dashboard (Filtre)</button>
+<hr>
+
+<h3>Cauta un tichet:</h3>
+<input type="text" [(ngModel)]="searchText">
+
+<br><br>
+
+<h3>Adauga un nou ticket custom:</h3>
+
+<form [formGroup]="ticketForm" (ngSubmit)="addTicket()">
+    
+    <p>Titlu tichet nou:</p>
+    <input type="text" formControlName="title">
+    
+    @if (ticketForm.get('title')?.invalid && ticketForm.get('title')?.touched) {
+        <p>Eroare: Titlu obligatoriu (max 100 caractere)</p>
+    }
+
+    <p>Descriere:</p>
+    <input type="text" formControlName="description">
+
+    @if (ticketForm.get('description')?.invalid && ticketForm.get('description')?.touched) {
+        <p>Eroare: Max 1000 caractere</p>
+    }
+
+    <p>Prioritatea:</p>
+    <select formControlName="priorityId">
+        <option value="1">LOW</option>
+        <option value="2">MEDIUM</option>
+        <option value="3">HIGH</option>
+    </select>
+
+    <br><br>
+
+    <button type="submit" [disabled]="ticketForm.invalid">Adauga</button>
+
+</form>
+
+<br><br>
+
+<button (click)="clearList()">Sterge tichetele</button>
+<button (click)="populateList()">Populeaza lista de tichete mock</button>
+
+<br><br>
+
+@if (filteredTickets.length == 0) {
+    <p>Lista de tichete este vida pentru cautarea ta!</p>
+    
+    @if (currentStatusFilter !== null) {
+        <p><em>* Filtrul de status este activ. Pentru a cauta in toate tichetele, intoarce-te la pagina de pornire".</em></p>
+    }
+}
+
+<!--Daca nu exista tichete, stie singur sa nu incerce bucla for-->
+@for (ticket of filteredTickets; track ticket.id) {
+    <!--Ce este in stanga este din TicketCard, ce e in dreapta sunt datele curente din TicketList-->
+    <app-ticket-card
+        [ticket]="ticket";
+        (deleteTicket)="removeTicketFromList($event)";>
+    </app-ticket-card>
+}

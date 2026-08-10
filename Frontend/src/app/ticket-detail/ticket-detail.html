@@ -1,0 +1,33 @@
+@if (notFound) {
+    <p>Eroare: Tichet negasit!</p>
+    <a routerLink="/tickets">Inapoi la lista</a>
+} @else if (ticket) {
+    <h2>{{ ticket.title | titlecase }}</h2>
+    <p>Cheie: {{ ticket.ticketKey }}</p>
+    <p>Descriere: {{ ticket.description }}</p>
+
+    <!-- Pipe-urile de la ex5 -->
+    <p>Creat la: {{ ticket.createdAt | date:'medium' }}</p>
+    <p>Status: {{ ticket.statusId | statusLabel }}</p>
+    <p>Prioritate: {{ ticket.priorityId | priorityLabel:true }}</p>
+    
+    <br>
+    <a routerLink="/tickets">Inapoi la lista principala</a>
+} @else {
+    <p>Se incarca datele...</p>
+}
+
+<br><br>
+
+<h3>Istoric modificari:</h3>
+
+@if (isLoadingAudit()) {
+    <p>Se incarca istoricul...</p>
+} @else {
+    @for (audit of auditHistory; track audit.date) {
+        <p>
+            [{{ audit.date | date:'short' }}] 
+            Status modificat din {{ audit.oldStatus | statusLabel }} in {{ audit.newStatus | statusLabel }}
+        </p>
+    }
+}
