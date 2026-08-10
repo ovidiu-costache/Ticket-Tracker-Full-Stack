@@ -3,12 +3,12 @@ import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } 
 import { TicketCardComponent } from "../ticket-card/ticket-card";
 import { TicketService } from '../ticket.service';
 import { Subscription } from 'rxjs';
-import { TicketDashboard } from '../ticket-dashboard/ticket-dashboard';
 import { RouterLink } from '@angular/router';
+import { CreateTicket } from '../models/ticket.model';
 
 @Component({
   selector: 'app-ticket-list',
-  imports: [TicketCardComponent, FormsModule, ReactiveFormsModule, TicketDashboard, RouterLink],
+  imports: [TicketCardComponent, FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './ticket-list.html',
   styleUrl: './ticket-list.css',
 })
@@ -72,25 +72,19 @@ export class TicketList implements OnInit {
 
   // Refactor
   addTicket() {
-    if (this.ticketForm.invalid) {
-      return; 
+    if (this.ticketForm.valid) {
+      // CreateTicketDto
+      const newTicket: CreateTicket = {
+        title: this.ticketForm.value.title ?? '',
+        description: this.ticketForm.value.description ?? '',
+        priorityId: Number(this.ticketForm.value.priorityId)
+      };
+
+      this.ticketService.addTicket(newTicket).subscribe(() => {
+        this.loadTickets();
+       this.ticketForm.reset({ title: '', description: '', priorityId: 1 }); // Clean
+      });
     }
-
-    const newTicket = {
-      id: this.tickets.length + 1,
-      ticketKey: 'TK-' + (this.tickets.length + 201),
-      title: this.ticketForm.value.title,
-      description: '',
-      createdAt: new Date(),
-      statusId: 1,
-      priorityId: Number(this.ticketForm.value.priorityId)
-    };
-
-    this.ticketService.addTicket(newTicket);
-    this.loadTickets();
-
-    // Resetare
-    this.ticketForm.reset({ priorityId: 1, title: '', description: '' });
   }
 
   clearList() {
@@ -103,7 +97,9 @@ export class TicketList implements OnInit {
   }
 
   removeTicketFromList(id: number) {
-    this.ticketService.deleteTicket(id);
-    this.loadTickets();
+    // http calls are not executed without subscribing
+    this.ticketService.deleteTicket(id).subscribe(() => {
+      this.loadTickets();
+    });
   }
 }

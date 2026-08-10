@@ -6,10 +6,9 @@
     <p>Cheie: {{ ticket.ticketKey }}</p>
     <p>Descriere: {{ ticket.description }}</p>
 
-    <!-- Pipe-urile de la ex5 -->
     <p>Creat la: {{ ticket.createdAt | date:'medium' }}</p>
-    <p>Status: {{ ticket.statusId | statusLabel }}</p>
-    <p>Prioritate: {{ ticket.priorityId | priorityLabel:true }}</p>
+    <p>Status: {{ ticket.status }}</p>
+    <p>Prioritate: {{ ticket.priority }}</p>
     
     <br>
     <a routerLink="/tickets">Inapoi la lista principala</a>
@@ -24,10 +23,10 @@
 @if (isLoadingAudit()) {
     <p>Se incarca istoricul...</p>
 } @else {
-    @for (audit of auditHistory; track audit.date) {
+    @for (audit of auditHistory; track audit.id) {
         <p>
-            [{{ audit.date | date:'short' }}] 
-            Status modificat din {{ audit.oldStatus | statusLabel }} in {{ audit.newStatus | statusLabel }}
+            [{{ audit.ticketModifiedAt | date:'short' }}] 
+            Modificare: {{ audit.ticketModificationType }} | Status curent: {{ audit.status }} | Prioritate: {{ audit.priority }}
         </p>
     }
 }

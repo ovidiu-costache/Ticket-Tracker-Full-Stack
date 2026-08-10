@@ -8,7 +8,7 @@ import { Subscription, map } from 'rxjs';
 
 @Component({
   selector: 'app-ticket-detail',
-  imports: [RouterLink, DatePipe, TitleCasePipe, StatusLabelPipe, PriorityLabelPipe],
+  imports: [RouterLink, DatePipe, TitleCasePipe],
   templateUrl: './ticket-detail.html',
   styleUrl: './ticket-detail.css',
 })
@@ -38,11 +38,9 @@ export class TicketDetail implements OnInit, OnDestroy {
         }
       });
 
-      this.auditSubscription = this.ticketService.getAuditForTicket(key).pipe(
-        // Se filtreaza cu map si .filter (ca in programarea functionala)
-        map(list => list.filter(item => item.oldStatus !== item.newStatus))
-      ).subscribe(filteredData => {
-        this.auditHistory = filteredData;
+      // Refactor
+      this.auditSubscription = this.ticketService.getAuditForTicket(key).subscribe(data => {
+        this.auditHistory = data;
         this.isLoadingAudit.set(false);
       });
     }
