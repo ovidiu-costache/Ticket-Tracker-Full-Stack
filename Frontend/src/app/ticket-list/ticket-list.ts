@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup, FormControl, Validators } from '@angular/forms';
 import { TicketCardComponent } from "../ticket-card/ticket-card";
 import { TicketService } from '../ticket.service';
@@ -31,10 +31,13 @@ export class TicketList implements OnInit {
     ])
   });
 
-  currentStatusFilter: number | null = null;
+  currentStatusFilter: string | null = null;
   filterSub!: Subscription;
 
-  constructor(private ticketService: TicketService) {}
+  constructor(
+    private ticketService: TicketService,
+    private cdr: ChangeDetectorRef  
+  ) {}
 
   ngOnInit() {
     this.loadTickets();
@@ -53,6 +56,7 @@ export class TicketList implements OnInit {
   loadTickets() {
     this.ticketService.getTickets().subscribe((data) => {
       this.tickets = data;
+      this.cdr.detectChanges(); // Sync problem solved
     });
   }
 
@@ -60,7 +64,7 @@ export class TicketList implements OnInit {
     let result = this.tickets;
 
     if (this.currentStatusFilter !== null) {
-      result = result.filter(t => t.statusId === this.currentStatusFilter);
+      result = result.filter(t => t.status === this.currentStatusFilter); // compare string with string
     }
 
     if (this.searchText == '') {
@@ -82,24 +86,15 @@ export class TicketList implements OnInit {
 
       this.ticketService.addTicket(newTicket).subscribe(() => {
         this.loadTickets();
-       this.ticketForm.reset({ title: '', description: '', priorityId: 1 }); // Clean
+        this.ticketForm.reset({ title: '', description: '', priorityId: 1 }); // clean form
       });
     }
-  }
-
-  clearList() {
-    this.tickets = [];
-  }
-
-  // Redundant, pentru testare
-  populateList() {
-    this.loadTickets();
   }
 
   removeTicketFromList(id: number) {
     // http calls are not executed without subscribing
     this.ticketService.deleteTicket(id).subscribe(() => {
-      this.loadTickets();
+      this.loadTickets(); 
     });
   }
 }

@@ -6,7 +6,7 @@ import { PriorityLabelPipe } from '../priority-label-pipe';
 
 @Component({
   selector: 'app-ticket-card',
-  imports: [DatePipe, TitleCasePipe, StatusLabelPipe, PriorityLabelPipe, RouterLink],
+  imports: [RouterLink],
   templateUrl: './ticket-card.html',
   styleUrl: './ticket-card.css',
 })

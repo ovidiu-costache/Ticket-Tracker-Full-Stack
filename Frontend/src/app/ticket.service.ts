@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-import { delay } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { Ticket, CreateTicket, UpdateTicket, TicketStats, TicketAudit } from './models/ticket.model';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { Ticket, CreateTicket, TicketStats, TicketAudit } from './models/ticket.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,10 +9,8 @@ import { Ticket, CreateTicket, UpdateTicket, TicketStats, TicketAudit } from './
 export class TicketService {
   private apiUrl = 'https://localhost:7118/tickets';
 
-  // Daca e null nu are niciun filtru
-  private currentFilterSubject = new BehaviorSubject<number | null>(null);
-
-  // Observable public la care sa se poata abona oricine
+  // null means no filter is applied
+  private currentFilterSubject = new BehaviorSubject<string | null>(null);
   public currentFilter$ = this.currentFilterSubject.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -38,12 +35,12 @@ export class TicketService {
     return this.http.get<TicketAudit[]>(`${this.apiUrl}/${ticketKey}/audit`);
   }
 
-  updateFilter(statusId: number | null) {
-    this.currentFilterSubject.next(statusId);
+  // update dashboard filter
+  updateFilter(status: string | null) {
+    this.currentFilterSubject.next(status);
   }
 
-  // Cate tichete sunt in fiecare status
-  getTicketCount(): Observable<TicketStats[]> {
+  getTicketStats(): Observable<TicketStats[]> {
     return this.http.get<TicketStats[]>(`${this.apiUrl}/stats`);
   }
 }

@@ -1,19 +1,10 @@
-<div>
-    <!--Am legat atributul HTML [title] de description-->
-    <h3>
-        <a [routerLink]="['/tickets', ticket.ticketKey]">Titlu: {{ ticket.title | titlecase }}</a>
-    </h3>
-
-    <p>Descriere: {{ ticket.description }}</p>
-
-    <p>Creat: {{ ticket.createdAt | date:'medium' }}</p>
-
-    <p>Cheie: {{ ticket.ticketKey }}</p>
-
-    <p>Status: {{ ticket.statusId | statusLabel }}</p>
-
-    <p>Prioritate: {{ ticket.priorityId | priorityLabel:true }}</p>
-
-    <!--Butonul care declanseaza metoda de output-->
-    <button (click)="removeTicket()">Sterge acest tichet</button>
+<div class="ticket-card">
+  <h3>{{ ticket.title }}</h3>
+  <p class="description">{{ ticket.description }}</p>
+  <div class="badges">
+    <span class="badge status-badge">Status: {{ ticket.status }}</span> | 
+    <span class="badge priority-badge">Prioritate: {{ ticket.priority }}</span>
+  </div>
+  <br>
+  <a [routerLink]="['/tickets', ticket.ticketKey]" class="details-link">Vezi detalii →</a>
 </div>
